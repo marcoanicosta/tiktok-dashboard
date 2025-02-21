@@ -12,7 +12,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI;
 
 // Step 1: Redirect user to TikTok OAuth
 app.get("/auth/tiktok", (req, res) => {
-    const authUrl = `https://open-api.tiktok.com/platform/oauth/connect/?client_key=${CLIENT_KEY}&scope=user.info.basic,user.stats&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${CLIENT_KEY}&scope=user.info.basic,user.stats&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
     res.redirect(authUrl);
 });
 
@@ -22,7 +22,7 @@ app.get("/auth/tiktok/callback", async (req, res) => {
     if (!code) return res.status(400).send("No code received");
 
     try {
-        const response = await axios.post("https://open-api.tiktok.com/oauth/access_token/", {
+        const response = await axios.post("https://open.tiktokapis.com/v2/oauth/token/", {
             client_key: CLIENT_KEY,
             client_secret: CLIENT_SECRET,
             code,
