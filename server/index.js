@@ -12,7 +12,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI;
 
 // Step 1: Redirect user to TikTok OAuth
 app.get("/auth/tiktok", (req, res) => {
-    const authUrl = `https://www.tiktok.com/auth/authorize/?client_key=${CLIENT_KEY}&scope=user.info.basic,user.stats&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    const authUrl = `https://open-api.tiktok.com/platform/oauth/connect/?client_key=${CLIENT_KEY}&scope=user.info.basic,user.stats&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
     res.redirect(authUrl);
 });
 
