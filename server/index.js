@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
+const qs = require("qs");
 require("dotenv").config();
 
 const app = express();
@@ -24,16 +25,16 @@ app.get("/auth/tiktok/callback", async (req, res) => {
     try {
         const response = await axios.post(
             "https://open.tiktokapis.com/v2/oauth/token/",
-            {
+            qs.stringify({
                 client_key: CLIENT_KEY,
                 client_secret: CLIENT_SECRET,
                 code,
                 grant_type: "authorization_code",
                 redirect_uri: REDIRECT_URI,
-            },
+            }),
             {
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/x-www-form-urlencoded",
                 },
             }
         );
