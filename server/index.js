@@ -65,11 +65,7 @@ app.get("/tiktok/profile", async (req, res) => {
         const response = await axios.post(
             "https://open.tiktokapis.com/v2/user/info/",
             {
-                fields: [
-                    "open_id",
-                    "display_name",
-                    "avatar_url"
-                ]
+                fields: "open_id,display_name,avatar_url,follower_count,heart_count,video_count"
             },
             {
                 headers: {
