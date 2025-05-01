@@ -68,10 +68,7 @@ app.get("/tiktok/profile", async (req, res) => {
                 fields: [
                     "open_id",
                     "display_name",
-                    "avatar_url",
-                    "follower_count",
-                    "heart_count",
-                    "video_count"
+                    "avatar_url"
                 ]
             },
             {
