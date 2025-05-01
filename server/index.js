@@ -62,15 +62,11 @@ app.get("/tiktok/profile", async (req, res) => {
     if (!access_token) return res.status(400).send("Missing access token");
 
     try {
-        const response = await axios.post(
-            "https://open.tiktokapis.com/v2/user/info/",
-            {
-                fields: "open_id,display_name,avatar_url,follower_count,heart_count,video_count"
-            },
+        const response = await axios.get(
+            "https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name,avatar_url,follower_count,heart_count,video_count",
             {
                 headers: {
                     Authorization: `Bearer ${access_token}`,
-                    "Content-Type": "application/json",
                 },
             }
         );
