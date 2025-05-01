@@ -12,7 +12,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI;
 
 // Step 1: Redirect user to TikTok OAuth
 app.get("/auth/tiktok", (req, res) => {
-    const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${CLIENT_KEY}&scope=user.info.basic,user.stats&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${CLIENT_KEY}&scope=user.info.basic&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
     res.redirect(authUrl);
 });
 
@@ -22,18 +22,32 @@ app.get("/auth/tiktok/callback", async (req, res) => {
     if (!code) return res.status(400).send("No code received");
 
     try {
-        const response = await axios.post("https://open.tiktokapis.com/v2/oauth/token/", {
-            client_key: CLIENT_KEY,
-            client_secret: CLIENT_SECRET,
-            code,
-            grant_type: "authorization_code",
-            redirect_uri: REDIRECT_URI,
-        });
+        const response = await axios.post(
+            "https://open.tiktokapis.com/v2/oauth/token/",
+            {
+                client_key: CLIENT_KEY,
+                client_secret: CLIENT_SECRET,
+                code,
+                grant_type: "authorization_code",
+                redirect_uri: REDIRECT_URI,
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
-        const { access_token, open_id } = response.data.data;
+        console.log("Token exchange response:", response.data);
+
+        if (!response.data || !response.data.access_token) {
+            return res.status(500).send("Authentication failed: Token not returned");
+        }
+
+        const { access_token, open_id } = response.data;
         res.json({ access_token, open_id });
     } catch (error) {
-        console.error("Error exchanging code for token:", error);
+        console.error("Token exchange failed:", error.response?.data || error.message);
         res.status(500).send("Authentication failed");
     }
 });
