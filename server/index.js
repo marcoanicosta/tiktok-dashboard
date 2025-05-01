@@ -82,6 +82,6 @@ app.get("/tiktok/profile", async (req, res) => {
         res.json(response.data);
     } catch (error) {
         console.error("Error fetching profile data:", error.response?.data || error.message);
-        res.status(500).send("Failed to fetch profile data");
+        res.status(500).json(error.response?.data || { error: error.message });
     }
 });
