@@ -58,17 +58,33 @@ app.listen(5002, () => console.log("Server running on port 5002 📟..."));
 
 // Fetch TikTok user metrics
 app.get("/tiktok/profile", async (req, res) => {
-    const { access_token, open_id } = req.query;
+    const { access_token } = req.query;
     if (!access_token) return res.status(400).send("Missing access token");
 
     try {
-        const response = await axios.get(`https://open-api.tiktok.com/user/info/?fields=follower_count,heart_count,video_count`, {
-            headers: { Authorization: `Bearer ${access_token}` }
-        });
+        const response = await axios.post(
+            "https://open.tiktokapis.com/v2/user/info/",
+            {
+                fields: [
+                    "open_id",
+                    "display_name",
+                    "avatar_url",
+                    "follower_count",
+                    "heart_count",
+                    "video_count"
+                ]
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
         res.json(response.data);
     } catch (error) {
-        console.error("Error fetching profile data:", error);
+        console.error("Error fetching profile data:", error.response?.data || error.message);
         res.status(500).send("Failed to fetch profile data");
     }
 });
