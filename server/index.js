@@ -7,6 +7,9 @@ require("dotenv").config();
 const app = express();
 app.use(cors());
 
+const path = require("path");
+app.use(express.static(path.join(__dirname, "../client/build")));
+
 const CLIENT_KEY = process.env.TIKTOK_CLIENT_KEY;
 const CLIENT_SECRET = process.env.TIKTOK_CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
@@ -53,10 +56,6 @@ app.get("/auth/tiktok/callback", async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 5002;
-app.listen(PORT, () => console.log(`Server running on port ${PORT} 📟...`));
-
-
 // Fetch TikTok user metrics
 app.get("/tiktok/profile", async (req, res) => {
     const { access_token } = req.query;
@@ -78,3 +77,11 @@ app.get("/tiktok/profile", async (req, res) => {
         res.status(500).json(error.response?.data || { error: error.message });
     }
 });
+
+const PORT = process.env.PORT || 5002;
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT} 📟...`));
