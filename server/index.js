@@ -46,7 +46,7 @@ app.get("/auth/tiktok/callback", async (req, res) => {
         }
 
         const { access_token, open_id } = response.data;
-        res.redirect(`http://localhost:3000?access_token=${access_token}&open_id=${open_id}`);
+        res.redirect(`http://localhost:3040/?access_token=${access_token}&open_id=${open_id}`);
     } catch (error) {
         console.error("Token exchange failed:", error.response?.data || error.message);
         res.status(500).send("Authentication failed");
