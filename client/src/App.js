@@ -10,6 +10,8 @@ const App = () => {
         const token = params.get("access_token");
         if (token) {
             localStorage.setItem("tiktok_access_token", token);
+            // Clean the URL after saving the token
+            window.history.replaceState({}, "", "/");
         }
     }, []);
 
