@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const App = () => {
+    console.log("Rendering App component");
+
     const [profile, setProfile] = useState(null);
     const [videos, setVideos] = useState([]);
 
@@ -18,6 +20,7 @@ const App = () => {
         if (token && token === storedToken) {
             console.log("Token already exists and matches stored token. Skipping...");
             window.history.replaceState({}, "", "/");
+            console.log("Finished useEffect");
             return;
         }
 
@@ -27,6 +30,7 @@ const App = () => {
             window.history.replaceState({}, "", "/");
             console.log("URL cleaned of token");
         }
+        console.log("Finished useEffect");
     }, []);
 
     const handleLogin = () => {
@@ -41,6 +45,7 @@ const App = () => {
         try {
             const res = await axios.get(`https://tiktok-dashboard.onrender.com/tiktok/profile?access_token=${access_token}`);
             setProfile(res.data);
+            console.log("Profile data fetched:", res.data);
         } catch (error) {
             console.error("Error fetching profile:", error);
         }
@@ -78,6 +83,7 @@ const App = () => {
             );
 
             setVideos(videoStatsRes.data.data.videos || []);
+            console.log("Fetched video stats:", videoStatsRes.data.data.videos || []);
         } catch (err) {
             console.error("Error fetching video stats:", err);
         }
