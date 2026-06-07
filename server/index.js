@@ -13,6 +13,9 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 const CLIENT_KEY = process.env.TIKTOK_CLIENT_KEY;
 const CLIENT_SECRET = process.env.TIKTOK_CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
+const POST_OAUTH_APP_URL = (
+  process.env.POST_OAUTH_APP_URL || "https://social-metrics-8roi.onrender.com"
+).replace(/\/$/, "");
 
 // Step 1: Redirect user to TikTok OAuth
 app.get("/auth/tiktok", (req, res) => {
@@ -20,8 +23,7 @@ app.get("/auth/tiktok", (req, res) => {
     res.redirect(authUrl);
 });
 
-// Step 2: Handle TikTok OAuth callback and exchange code for access token
-app.get("/auth/tiktok/callback", async (req, res) => {
+async function handleTiktokCallback(req, res) {
     const { code } = req.query;
     if (!code) return res.status(400).send("No code received");
 
@@ -42,19 +44,25 @@ app.get("/auth/tiktok/callback", async (req, res) => {
             }
         );
 
-        console.log("Token exchange response:", response.data);
-
-        if (!response.data || !response.data.access_token) {
+        const tokenData = response.data?.data ?? response.data;
+        if (!tokenData?.access_token) {
             return res.status(500).send("Authentication failed: Token not returned");
         }
 
-        const { access_token, open_id } = response.data;
-        res.redirect(`http://localhost:3040/?access_token=${access_token}&open_id=${open_id}`);
+        const { access_token, open_id, refresh_token } = tokenData;
+        const redirect = new URL(POST_OAUTH_APP_URL);
+        redirect.searchParams.set("access_token", access_token);
+        if (open_id) redirect.searchParams.set("open_id", open_id);
+        if (refresh_token) redirect.searchParams.set("refresh_token", refresh_token);
+        res.redirect(redirect.toString());
     } catch (error) {
         console.error("Token exchange failed:", error.response?.data || error.message);
         res.status(500).send("Authentication failed");
     }
-});
+}
+
+app.get("/auth/tiktok/callback", handleTiktokCallback);
+app.get("/auth/tiktok/callback/", handleTiktokCallback);
 
 // Fetch TikTok user metrics
 app.get("/tiktok/profile", async (req, res) => {
